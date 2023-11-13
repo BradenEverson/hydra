@@ -299,8 +299,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "triton_grow"
-version = "1.4.4"
+name = "triton_hydra"
+version = "0.0.1"
 dependencies = [
  "ndarray",
  "ndarray-rand",

@@ -1,4 +1,4 @@
-use triton_grow::network::{network::Network, activations::Activations, modes::Mode};
+use triton_hydra::network::{network::Network, activations::Activations, modes::Mode};
 
 fn main() {
     let inputs = vec![vec![0.0,0.0],vec![1.0,0.0],vec![0.0,1.0],vec![1.0,1.0]];
