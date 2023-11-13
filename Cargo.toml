@@ -1,0 +1,17 @@
+[package]
+name = "triton_hydra"
+version = "0.0.1"
+authors = ["BradenEverson"]
+description = "A branch of the triton project build with CUDA backend for matrix math"
+edition = "2021"
+license = "MIT"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ndarray = "0.15.6"
+ndarray-rand = "0.14.0"
+rand = "0.8.5"
+rayon = "1.8.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
