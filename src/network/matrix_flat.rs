@@ -4,6 +4,13 @@ use serde::{Serialize, Deserialize};
 use std::ops::{self, IndexMut};
 use std::ops::Index;
 use rayon::prelude::*;
+use std::ffi::{c_float, c_int};
+
+
+#[link(name = "matrix_math", kind="static")]
+extern "C"{
+    fn cuda_matrix_mul(result: *mut f32, mat_a: *const CMatrix, mat_b: *const CMatrix);
+}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Matrix{
@@ -13,11 +20,12 @@ pub struct Matrix{
 }
 
 #[derive(Debug)]
+#[repr(C)]
 pub struct CMatrix{
-    pub rows: i32,
-    pub col: i32,
-    pub data: * const f32,
-    pub len: i32
+    pub rows: c_int,
+    pub col: c_int,
+    pub data: * const c_float,
+    pub len: c_int
 }
 
 impl CMatrix{
@@ -65,7 +73,13 @@ impl ops::Mul<&Matrix> for &Matrix{
             panic!("Matrix multiplication is in invalid format");
         }
         //Do parallel matrix multiplication as to the Strassen algorithm
-        self.par_multiply(other)
+        //self.par_multiply(other)
+        let mut result: Vec<f32> = vec![0.0; (self.rows * other.columns) as usize];
+        unsafe{
+            cuda_matrix_mul(result.as_mut_ptr(), &self.to_cmatrix() as *const CMatrix, &other.to_cmatrix() as *const CMatrix);
+            println!("{:?}", result);
+            return Matrix::from_flat(self.rows, other.columns, result);
+        }
     }
 }
 

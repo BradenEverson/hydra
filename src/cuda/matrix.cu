@@ -1,4 +1,6 @@
 
+#include <cstdio>
+#include <driver_types.h>
 struct CMatrix{
     int rows;
     int cols;
@@ -46,7 +48,10 @@ extern "C" {
         //Call cuda function!
         matrixMul<<<gridSize, blockSize>>>(result_dev, matrix_a_dev, matrix_b_dev, matrix_a->rows, matrix_a->cols, matrix_b->cols); 
 
-        cudaMemcpy(result, result_dev, matrix_a->rows * matrix_b->cols * sizeof(float), cudaMemcpyDeviceToHost);
+        cudaError_t err = cudaMemcpy(result, result_dev, matrix_a->rows * matrix_b->cols * sizeof(float), cudaMemcpyDeviceToHost);
+        if(err != cudaSuccess){
+            printf("Big ass cuda error: %s\n", cudaGetErrorString(err));
+        }
         //Memory management :D
         cudaFree(result_dev);
         cudaFree(matrix_a_dev);
@@ -68,7 +73,7 @@ extern "C" {
         dim3 blockSize(16,16);
         dim3 gridSize((matrix_b->cols + blockSize.x - 1) / blockSize.x, (matrix_a->rows + blockSize.y - 1) / blockSize.y);
         //Call cuda function!
-        matrixMul<<<gridSize, blockSize>>>(result_dev, matrix_a_dev, matrix_b_dev, matrix_a->rows, matrix_a->cols, matrix_b->cols); 
+        matrixAdd<<<gridSize, blockSize>>>(result_dev, matrix_a_dev, matrix_b_dev, matrix_a->rows, matrix_a->cols); 
 
         cudaMemcpy(result, result_dev, matrix_a->len * sizeof(float), cudaMemcpyDeviceToHost);
         //Memory management :D
@@ -77,7 +82,46 @@ extern "C" {
         cudaFree(matrix_b_dev);
     }
 }
+/*
+int main() {
+    //Test matrix math
+    int rowsA = 3;
+    int colsA = 4;
+    int rowsB = 4; // Should match colsA for multiplication
+    int colsB = 2;
 
-int main(){
+    float matrixA[rowsA * colsA];
+    float matrixB[rowsB * colsB];
+
+    for (int i = 0; i < rowsA * colsA; ++i) {
+        matrixA[i] = (float)(rand() % 10); 
+        printf("%f ", matrixA[i]);
+    }
+    printf("\n");
+    for (int i = 0; i < rowsB * colsB; ++i) {
+        matrixB[i] = (float)(rand() % 10); 
+        printf("%f ", matrixB[i]);
+    }
+
+    struct CMatrix matA = { rowsA, colsA, matrixA, rowsA * colsA };
+    struct CMatrix matB = { rowsB, colsB, matrixB, rowsB * colsB };
+
+    int rowsResult = rowsA;
+    int colsResult = colsB;
+
+    float resultMatrix[rowsResult * colsResult];
+
+    struct CMatrix matResult = { rowsResult, colsResult, resultMatrix, rowsResult * colsResult };
+
+    cuda_matrix_mul(resultMatrix, &matA, &matB);
+
+    printf("Result Matrix:\n");
+    for (int i = 0; i < rowsResult; ++i) {
+        for (int j = 0; j < colsResult; ++j) {
+            printf("%.2f ", resultMatrix[i * colsResult + j]);
+        }
+        printf("\n");
+    }
+
     return 0;
-}
+}*/
