@@ -3,7 +3,6 @@ use ndarray::*;
 use serde::{Serialize, Deserialize};
 use std::ops::{self, IndexMut};
 use std::ops::Index;
-use rayon::prelude::*;
 use std::ffi::{c_float, c_int};
 
 
@@ -73,11 +72,10 @@ impl ops::Mul<&Matrix> for &Matrix{
             panic!("Matrix multiplication is in invalid format");
         }
         //Do parallel matrix multiplication as to the Strassen algorithm
-        //self.par_multiply(other)
         let mut result: Vec<f32> = vec![0.0; (self.rows * other.columns) as usize];
         unsafe{
             cuda_matrix_mul(result.as_mut_ptr(), &self.to_cmatrix() as *const CMatrix, &other.to_cmatrix() as *const CMatrix);
-            println!("{:?}", result);
+            //println!("{:?}", result);
             return Matrix::from_flat(self.rows, other.columns, result);
         }
     }
