@@ -71,10 +71,12 @@ impl ops::Mul<&Matrix> for &Matrix{
         if self.columns != other.rows{
             panic!("Matrix multiplication is in invalid format");
         }
+        //println!("{:?}", self.par_multiply(other).data);
         //Do parallel matrix multiplication as to the Strassen algorithm
         let mut result: Vec<f32> = vec![0.0; (self.rows * other.columns) as usize];
         unsafe{
             cuda_matrix_mul(result.as_mut_ptr(), &self.to_cmatrix() as *const CMatrix, &other.to_cmatrix() as *const CMatrix);
+            //println!("{:?}", result);
             return Matrix::from_flat(self.rows, other.columns, result);
         }
     }
