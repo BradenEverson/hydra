@@ -33,6 +33,7 @@ extern "C" {
     void cuda_matrix_mul(float *result, const CMatrix *matrix_a, const CMatrix *matrix_b){
         //Transfer to device mem :)
         float *result_dev, *matrix_a_dev, *matrix_b_dev;
+
         cudaMalloc((void**)&result_dev, matrix_a->rows * matrix_b->cols * sizeof(float));
 
         cudaMalloc((void**)&matrix_a_dev, matrix_a->len*sizeof(float));
@@ -51,7 +52,12 @@ extern "C" {
         cudaError_t err = cudaMemcpy(result, result_dev, matrix_a->rows * matrix_b->cols * sizeof(float), cudaMemcpyDeviceToHost);
         if(err != cudaSuccess){
             printf("Big ass cuda error: %s\n", cudaGetErrorString(err));
+        }else{
+            for(int i = 0; i < matrix_a->rows * matrix_b->cols; i++){
+                //printf("%f ", result[i]);
+            }
         }
+        //printf("\n");
         //Memory management :D
         cudaFree(result_dev);
         cudaFree(matrix_a_dev);
