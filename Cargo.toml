@@ -1,6 +1,6 @@
 [package]
 name = "triton_hydra"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["BradenEverson"]
 description = "A branch of the triton project build with CUDA backend for matrix math"
 edition = "2021"
